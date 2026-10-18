@@ -11,8 +11,8 @@ finishes neither a layer nor the roadmap.
 
 Loci are sets of points whose members have coheight one: the generic points of prime divisors
 (Tau Ceti's `TauCeti.AlgebraicGeometry.CodimensionOnePoint`). The normal-scheme predicate and the
-ramification index at a point are SchemeAndStackFoundations §0.30 (`IsNormalScheme`,
-`Scheme.Hom.ramificationIdxAt`); this file writes normality as the two stalk conditions and the
+ramification index at a point are SchemeAndStackFoundations §0.30 (`NormalSchemes.IsNormalScheme`,
+`NormalSchemes.ramificationIdxAt`); this file writes normality as the two stalk conditions and the
 ramification index as its defining formula, so that it builds against the pinned libraries.
 Declarations with a Stacks Project counterpart carry `@[stacks]`.
 -/
@@ -69,7 +69,7 @@ section Layer1
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 /-- The ramification index of `f` at `x` (SchemeAndStackFoundations §0.30
-`Scheme.Hom.ramificationIdxAt`), written out. -/
+`NormalSchemes.ramificationIdxAt`), written out. -/
 abbrev ramificationIdxAt (x : X) : ℕ :=
   letI := (f.stalkMap x).hom.toAlgebra
   (IsLocalRing.maximalIdeal (X.presheaf.stalk x)).ramificationIdx (Y.presheaf.stalk (f x))
@@ -182,6 +182,13 @@ theorem divisorialBranchLocus_subset_nonUnramified (k : Type u) [Field k] [CharZ
     (sX : X ⟶ Spec (.of k)) [LocallyOfFiniteType sX] [IsLocallyNoetherian X] [NoetherianSpace X]
     [IsFinite f] :
     divisorialBranchLocus f ⊆ nonUnramifiedDivisorialBranchLocus f := by
+  sorry
+
+/-- `Crit(f) ⊆ Crit₀(f)` in every characteristic when the source is normal: ramification index
+`> 1` at `x` gives `𝔪_y 𝒪_x ≠ 𝔪_x`, so `f` is not unramified at `x`. -/
+theorem divisorialCriticalLocus_subset_nonUnramified_of_isNormalScheme
+    [∀ x : X, IsIntegrallyClosed (X.presheaf.stalk x)] [IsFinite f] :
+    divisorialCriticalLocus f ⊆ nonUnramifiedDivisorialCriticalLocus f := by
   sorry
 
 theorem nonUnramifiedDivisorialBranchLocus_subset_nonEtale :
@@ -442,9 +449,11 @@ def wild (k : Type u) [Field k] (p : ℕ) (c : k) : FormsWithoutCommonZero k 2 (
   mem_radical := sorry
 
 /-- Check: in characteristic `p`, with `c` transcendental over `𝔽_p`, the wild map is PCF and not
-PCF all the way down. -/
-theorem test_wild (k : Type u) [Field k] (p : ℕ) [Fact p.Prime] [Algebra (ZMod p) k] (c : k)
-    (hc : Transcendental (ZMod p) c) :
+PCF all the way down. It is non-étale PCF, hence PCF by
+`divisorialCriticalLocus_subset_nonUnramified_of_isNormalScheme`, which holds in characteristic
+`p`. -/
+theorem test_wild (k : Type u) [Field k] (p : ℕ) [Fact p.Prime] [CharP k p] (c : k)
+    (hc : Transcendental (⊥ : Subfield k) c) :
     IsPCF (wild k p c).toHom ∧ ¬ IsPCFAllTheWayDown (wild k p c).toHom := by
   sorry
 

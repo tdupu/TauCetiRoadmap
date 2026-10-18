@@ -17,7 +17,9 @@ Abhyankar's lemma for a regular divisor ([AbhyankarLemma](../AbhyankarLemma/READ
 has schemes, finite, dominant and étale morphisms, relative normalization, ramification indices of
 ideals and periodic points; normal schemes, codimension-one points under finite morphisms and
 ramification at a point are [SchemeAndStackFoundations](../SchemeAndStackFoundations/README.md)
-§0.30. Nobody has preperiodic points of a self-map, divisorial branch loci or postcritical sets.
+§0.30. Neither library has preperiodic points of a self-map, forward orbits of sets, divisorial
+branch loci or postcritical sets (Mathlib's `Flow.forwardOrbit` is the forward orbit of a point
+under a flow, a different notion).
 
 | Layer | Title | What it delivers |
 |---|---|---|
@@ -58,20 +60,22 @@ projective space given by forms with the Jacobian criterion.
   `Function.periodicPts`.
 - *Normal schemes, codimension-one points under finite dominant morphisms, ramification at a
   point, regular quotients of a regular local ring*: SchemeAndStackFoundations §0.30
-  (`IsNormalScheme`, Stacks 033I; `coheight_apply_eq_one`, `Scheme.Hom.codimensionOneMap`;
-  `Scheme.Hom.ramificationIdxAt`, `ramificationIdxAt_comp`; `exists_regularSystem_of_quotient`,
+  (`NormalSchemes.IsNormalScheme`, Stacks 033I; `NormalSchemes.coheight_apply_eq_one`,
+  `NormalSchemes.codimensionOneMap`; `NormalSchemes.ramificationIdxAt`,
+  `NormalSchemes.ramificationIdxAt_comp`; `NormalSchemes.exists_regularSystem_of_quotient`,
   Stacks 00NR).
 - *Codimension-one points*: Tau Ceti `TauCeti.AlgebraicGeometry.CodimensionOnePoint` (module
   `TauCeti.AlgebraicGeometry.Scheme.CodimensionOnePoint`) and Mathlib `Order.coheight`.
 - *Relative normalization*: Mathlib `Scheme.Hom.normalization`, `Scheme.Hom.toNormalization`,
   `Scheme.Hom.fromNormalization`, `Scheme.Hom.normalizationDesc` (the universal property, Stacks,
-  Lemma 29.54.4 (035I)), `normalization.hom_ext`; Tau Ceti `Scheme.Hom.normalizationMap` (035J).
+  Lemma 29.54.4 (035I)), `normalization.hom_ext`; Tau Ceti `Scheme.Hom.normalizationMap` (035J),
+  which postdates the roadmap's Tau Ceti pin `a91d3aaf` (it is in Tau Ceti `main` from `1ac117c`).
   Finiteness of the normalization of a Nagata integral scheme: SchemeAndStackFoundations §0.20
   `nagata_normalization_finite` (0AVK), with finite-type algebras over a field Nagata by §0.21.
 - *Ramification indices of ideals*: Mathlib `Ideal.ramificationIdx`, `Ideal.ramificationIdx_tower`.
 - *Pointwise étale and unramified, and the ramification, non-étale and branch loci as sets*:
   PurityOfBranchLocus §0.1 (`Scheme.Hom.etaleAt_iff_stalkMap`,
-  `Scheme.Hom.unramifiedAt_iff_stalkMap`; Stacks 02GU, 02GF) and §0.4
+  `Scheme.Hom.unramifiedAt_iff_stalkMap`; Stacks 02GU, 02G4) and §0.4
   (`Scheme.Hom.ramificationLocus`, `Scheme.Hom.nonEtaleLocus`, `Scheme.Hom.branchLocus`).
 - *Purity of the branch locus*: PurityOfBranchLocus §2.1
   (`Scheme.Hom.exists_etale_of_formallyUnramified_stalk_codimOne`, Stacks 0BMB) and §1.1
@@ -107,8 +111,10 @@ Periodic subvarieties of codimension at least two are not in this roadmap.
    `LocallyOfFiniteType`. Separatedness is not assumed. Self-maps `φ : X ⟶ X` are `IsFinite` and
    `IsDominant` (hence surjective) and are not required to commute with `s`. Results on varieties
    carry exactly these hypotheses; definitions carry only what they need.
-4. **Divisorial loci.** Loci are sets of points, `Set X`, whose members have `Order.coheight x = 1`:
-   each is the set of generic points of prime divisors. The *divisorial critical locus* and the
+4. **Divisorial loci.** Loci are sets of points, `Set X`. The critical loci consist of points with
+   `Order.coheight x = 1`; for finite dominant morphisms of varieties (or with normal target) so do
+   the branch loci, by SchemeAndStackFoundations §0.30 `coheight_apply_eq_one`. Each is then the
+   set of generic points of prime divisors. The *divisorial critical locus* and the
    *divisorial branch locus* are the normalized ones (Layer 3); the *non-unramified* and
    *non-étale* ones carry those words in their names. They are the codimension-one parts of the
    loci of PurityOfBranchLocus §0.4 (`Scheme.Hom.ramificationLocus`, `Scheme.Hom.nonEtaleLocus`,
@@ -116,7 +122,7 @@ Periodic subvarieties of codimension at least two are not in this roadmap.
 5. **Pointwise notions.** "Étale at `x`" means that `(f.stalkMap x).hom` is flat and formally
    unramified, and "unramified at `x`" that it is formally unramified: the stalk forms of
    PurityOfBranchLocus §0.1. The ramification index at `x` is SchemeAndStackFoundations §0.30
-   `Scheme.Hom.ramificationIdxAt`.
+   `NormalSchemes.ramificationIdxAt`.
 6. **PCF.** `IsPCF φ` is finiteness of the postcritical set built from the divisorial branch
    locus; `IsNonUnramifiedPCF φ` and `IsNonEtalePCF φ` are the variants for the non-unramified and
    non-étale divisorial branch loci.
@@ -165,10 +171,14 @@ characteristic zero and `x` a codimension-one point. Prove `ramificationIdxAt_eq
 `ramificationIdxAt f x = 1` iff `f` is étale at `x` (Stacks, Lemma 29.36.14 (02GF) (6) and Lemma
 29.37.15 (02GU); the stalk of `X` is torsion free, hence flat, over the stalk of `Y`, and residue
 extensions are separable in characteristic zero). For a finite dominant `g : X' ⟶ Y'` of varieties
-over `k` with `X'` normal, prove `isReduced_fiber_iff_forall_ramificationIdxAt_eq_one`: the fibre of
-`g` over a codimension-one point `η` of `Y'` is reduced iff every point of `X'` over `η` has
-ramification index one; and `isReduced_fiber_iff_forall_formallyUnramified` for arbitrary `X'`:
-the fibre over `η` is reduced iff `g` is unramified at every point over `η` (02GF (6)).
+over a field `k` of any characteristic, with `X'` normal, prove
+`isReduced_fiber_iff_forall_ramificationIdxAt_eq_one`: the fibre of `g` over a codimension-one
+point `η` of `Y'` is reduced iff every point of `X'` over `η` has ramification index one (the local
+ring of the fibre at `x` is `𝒪_{X',x} ⧸ 𝔪_x^e`; no normality of `Y'` is needed). For `char k = 0`
+and arbitrary `X'`, prove `isReduced_fiber_iff_forall_formallyUnramified`: the fibre over `η` is
+reduced iff `g` is unramified at every point over `η` (02GF (6)). This needs `char k = 0`: over
+`k = 𝔽_p(t)`, `x ↦ x^p` on `𝔸¹` has reduced fibre `k[x] ⧸ (x^p − t)` over `y = t`, a field, but
+is not unramified there (the residue extension is inseparable).
 *Needs:* SchemeAndStackFoundations §0.30; PurityOfBranchLocus §0.1; Mathlib `Module.Flat` for
 torsion-free modules over a discrete valuation ring (`@[stacks 0AUW]`), `Scheme.Hom.fiber`.
 
@@ -185,7 +195,8 @@ finite and `normalization X` is again a variety (SchemeAndStackFoundations §0.2
 `nagata_normalization_finite`).
 *Needs:* SchemeAndStackFoundations §§0.20–0.21, 0.30; Mathlib `Scheme.Hom.normalization`,
 `Scheme.fromSpecStalk`, `genericPoint`; Tau Ceti
-`Scheme.Hom.isIso_normalizationDesc_fromSpecStalk_genericPoint`.
+`TauCeti.AlgebraicGeometry.isIso_normalizationDesc_fromSpecStalk_genericPoint`, which postdates the
+roadmap's Tau Ceti pin `a91d3aaf` (it is in Tau Ceti `main` from `05bc128`).
 
 ### 2.2 The normalization lift
 
@@ -196,7 +207,7 @@ normalization X ⟶ normalization Y` with `normalizationLift_comp_normalizationH
 `normalizationLift_id`, `normalizationLift_comp`, `normalizationLift_iterateHom`, and that the lift
 of a finite dominant morphism of varieties is finite and dominant.
 *Needs:* §2.1; Mathlib `Scheme.Hom.normalizationDesc`, `normalization.hom_ext`; Tau Ceti
-`Scheme.Hom.normalizationMap`.
+`Scheme.Hom.normalizationMap` (after the pin, see above).
 
 **Checks.**
 - `test_cusp_normalization`: the normalization of `Spec k[t², t³]` is `Spec k[t]`, and the lift of
@@ -216,7 +227,7 @@ For a dominant `f : X ⟶ Y` of integral schemes, define:
   codimension-one points of PurityOfBranchLocus §0.4 `f.ramificationLocus` (where `f` is not
   unramified), and its image, the *non-unramified divisorial branch locus*
   `nonUnramifiedDivisorialBranchLocus f`, the codimension-one points of `f.branchLocus` when `f` is
-  finite;
+  a finite dominant morphism of varieties;
 - the *non-étale divisorial critical locus* `nonEtaleDivisorialCriticalLocus f`: the
   codimension-one points of PurityOfBranchLocus §0.4 `f.nonEtaleLocus`, and its image, the
   *non-étale divisorial branch locus* `nonEtaleDivisorialBranchLocus f`.
@@ -239,7 +250,13 @@ point, so it contains finitely many codimension-one points, §4.1), and the comp
 `divisorialCriticalLocus f ⊆ nonUnramifiedDivisorialCriticalLocus f ⊆
 nonEtaleDivisorialCriticalLocus f`, with the same chain for the branch loci; so all six loci are
 finite. Prove `divisorialCriticalLocus_eq_nonEtale_of_isNormalScheme`: if `X` and `Y` are normal the
-three critical loci coincide (§1.1).
+three critical loci coincide (§1.1). In any characteristic, prove
+`divisorialCriticalLocus_subset_nonUnramified_of_isNormalScheme`: for `f` finite and dominant with
+`X` normal, `divisorialCriticalLocus f ⊆ nonUnramifiedDivisorialCriticalLocus f`, hence
+`⊆ nonEtaleDivisorialCriticalLocus f`, with the same chain for the branch loci and the postcritical
+sets. Here `normalizationHom X` is an isomorphism, and ramification index `e > 1` at `x` over the
+point `ỹ` of `normalization Y` gives `𝔪_y 𝒪_x ⊆ 𝔪_ỹ 𝒪_x ≠ 𝔪_x`, so `f` is not unramified at `x`
+(Stacks, Lemma 29.36.14 (02GF) (6)).
 *Needs:* §§1.1, 3.1, 4.1; Mathlib `Algebra.etaleLocus` and its openness.
 
 ### 3.3 Towers
@@ -317,15 +334,14 @@ topologicalKrullDim X`.
 
 ### 4.3 Induced maps on closures
 
-For finite `f : X ⟶ Y` and `y : X` define `pointClosureMap f y : pointClosure y ⟶ pointClosure (f y)`,
-the unique morphism with `pointClosureMap f y ≫ pointClosureι (f y) = pointClosureι y ≫ f` (a
+For finite `f : X ⟶ Y` and `y : X` define `pointClosureMap f y : pointClosure y ⟶ pointClosure (f
+y)`, the unique morphism with `pointClosureMap f y ≫ pointClosureι (f y) = pointClosureι y ≫ f` (a
 morphism from a reduced scheme factors through a closed subscheme containing its image, Stacks,
-Lemma 26.12.7 (0356)), and prove it finite and surjective, and dominant when `X` and `Y` are
-integral. For `φ : X ⟶ X` with `φ y = y` define `restrictPointClosure φ y`, prove
-`restrictPointClosure_iterateHom` (compatibility with iterates) and
-`normalizationHom_restrictPointClosure`: for a codimension-one point `ỹ` of `normalization X` over
-`y` fixed by `normalizationLift φ`, the map `pointClosure ỹ ⟶ pointClosure y` induced by
-`normalizationHom X` is finite and surjective and intertwines the two restrictions.
+Lemma 26.12.7 (0356)), and prove it finite and surjective, hence dominant. For `φ : X ⟶ X` with `φ y
+= y` define `restrictPointClosure φ y`, prove `restrictPointClosure_iterateHom` (compatibility with
+iterates) and `normalizationHom_restrictPointClosure`: for a codimension-one point `ỹ` of
+`normalization X` over `y` fixed by `normalizationLift φ`, the map `pointClosure ỹ ⟶ pointClosure y`
+induced by `normalizationHom X` is finite and surjective and intertwines the two restrictions.
 *Needs:* §§2.2, 4.2; SchemeAndStackFoundations §0.30; Mathlib `IsClosedImmersion.lift`, `IsFinite`.
 
 ## Layer 5: the bounding theorem
@@ -360,8 +376,12 @@ morphism `pointClosureMap f a` is étale at `x`. The proof: choose an affine ope
 (`η` the image of `x`) missing `Z`, `Sing Y` and `Sing B`; `D = B ∩ U` is a regular divisor on the
 regular scheme `U` (SchemeAndStackFoundations §0.30 `exists_regularSystem_of_quotient`); over
 `U ∖ D` the morphism `f` is étale by purity (PurityOfBranchLocus §2.1), with §1.1 for the
-codimension-one hypotheses; `f⁻¹ U` is the normalization of `U` in `f⁻¹(U ∖ D)` (Mathlib
-`Scheme.Hom.normalizationDesc`; Stacks, Lemma 10.37.16 (030C)); in characteristic zero every finite
+codimension-one hypotheses; `f⁻¹ U` is the normalization of `U` in `f⁻¹(U ∖ D)`: by the
+characterization of the normalization (Stacks, Lemma 29.54.4 (035I); Mathlib
+`Scheme.Hom.normalizationDesc`) the normalization `U'` of `U` in `f⁻¹(U ∖ D)` comes with a map
+`U' ⟶ f⁻¹ U` that is the normalization of `f⁻¹ U` in its dense open `f⁻¹(U ∖ D)`, an isomorphism
+because `f⁻¹ U` is normal and integral (a function on `f⁻¹(U ∖ D)` integral over `𝒪(f⁻¹ U)` is
+in `𝒪(f⁻¹ U)`); in characteristic zero every finite
 étale cover is tamely ramified in codimension one, so Abhyankar's lemma (AbhyankarLemma §§3.3–3.4)
 presents `f⁻¹ U → U`, étale locally, as a finite disjoint union of standard pieces; §5.2 shows that
 the reduced preimage of `D` maps isomorphically onto `D` on each piece; and étaleness descends
@@ -375,7 +395,10 @@ loci, lies in `boundingLocus f a`.
 **Checks.**
 - `test_bounding_cusp`: for `f(u, v) = (u², u³ + v)` on `𝔸²` and `a` the generic point of `V(v)`,
   `pointClosureMap f a` is the normalization of the cuspidal cubic: its divisorial branch locus is
-  empty while `closure {f a} ∩ Z = {(0, 0)}`. The inclusion of §5.3 is strict.
+  empty while `closure {f a} ∩ Z = {(0, 0)} = boundingLocus f a`. So the inclusion of the
+  divisorial branch locus in `boundingLocus f a` is strict, while the companion inclusion of §5.3
+  is an equality: the normalization `𝔸¹ ⟶ {y² = x³}` is not étale at `t = 0`, so
+  `nonEtaleDivisorialBranchLocus (pointClosureMap f a) = {(0, 0)}`.
 - `test_bounding_singular_target`: for `𝔸² → Spec k[x, y, z]/(xz − y²)`, `(u, v) ↦ (u², uv, v²)`
   and `a` the generic point of `V(v)`, the restriction `u ↦ u²` ramifies at the origin although
   `Z = ∅`; the term `closure {f a} ∩ Sing Y` is needed.
@@ -434,10 +457,11 @@ variety by §§4.2–4.3).
 **Checks.**
 - `test_squaring_line`: `x ↦ x²` on `𝔸¹_k`, `char k = 0`: `divisorialBranchLocus = postcriticalSet =
   {0}`.
-- `test_basilica`: `x ↦ x² − 1` on `𝔸¹_k`: `postcriticalSet = {−1, 0}` with `0` of period two.
-- `test_squaring_plane`: `(x, y) ↦ (x², y²)` on `𝔸²_k`: the divisorial critical locus is the two
-  axes, both invariant, the restrictions are the squaring map of `𝔸¹`, and the map is PCF all the
-  way down; the diagonal `V(x − y)` is invariant and not in `postcriticalSet`.
+- `test_basilica`: `x ↦ x² − 1` on `𝔸¹_k`, `char k = 0`: `postcriticalSet = {−1, 0}` with `0` of
+  period two.
+- `test_squaring_plane`: `(x, y) ↦ (x², y²)` on `𝔸²_k`, `char k = 0`: the divisorial critical locus
+  is the two axes, both invariant, the restrictions are the squaring map of `𝔸¹`, and the map is PCF
+  all the way down; the diagonal `V(x − y)` is invariant and not in `postcriticalSet`.
 - `test_pinched_plane`: let `R = {h ∈ k[z, w] : h(2, 1) = h(−2, 1)}`, `X = Spec R`, and `φ` induced by
   `(z, w) ↦ (z², w²)`. Then `φ` is PCF, non-unramified PCF and non-étale PCF; the image `B` of
   `V(w − 1)` is invariant; the restriction of `φ` to `B` is PCF but neither non-unramified PCF nor
@@ -458,8 +482,8 @@ closure). Define `ProjectiveSpace.homOfForms F : ℙⁿ_k ⟶ ℙⁿ_k` (*API*):
 `(homOfForms F) ⁻¹ᵁ Proj.basicOpen _ (X b) = Proj.basicOpen _ (F b)` on which it is given by
 `X i / X b ↦ F i / F b`. Prove `ProjectiveSpace.isFinite_homOfForms` (`k[X]` is a finite module over
 `k[F_0, …, F_n]` by graded Nakayama, since the quotient by the `F i` is finite-dimensional),
-`homOfForms_comp` (composition is substitution), `homOfForms_apply_zeroLocus` (images of linear
-subspaces cut out by forms), and that `ℙⁿ_k` is a variety over `k` in the sense of Convention 3.
+`homOfForms_comp` (composition is substitution), and that `ℙⁿ_k` is a variety over `k` in the
+sense of Convention 3.
 *Needs:* Mathlib `Proj`, `Proj.basicOpen`, `Proj.awayι`, `HomogeneousLocalization`,
 `MvPolynomial.IsHomogeneous`, `Ideal.radical`.
 
@@ -476,20 +500,22 @@ generic points of the codimension-one components of `V₊(J)`.
 `KaehlerDifferential`, `MvPolynomial.pderiv`, `Matrix.det`.
 
 **Checks.**
-- `test_squaring_projective`: `[x₀ : x₁] ↦ [x₀² : x₁²]` on `ℙ¹`: `postcriticalSet = {0, ∞}`.
-- `test_squaring_P2`: `[x : y : z] ↦ [x² : y² : z²]` on `ℙ²` is PCF all the way down; its
-  `postcriticalSet` is the three coordinate lines.
+- `test_squaring_projective`: `[x₀ : x₁] ↦ [x₀² : x₁²]` on `ℙ¹`, `char k = 0`:
+  `postcriticalSet = {0, ∞}`.
+- `test_squaring_P2`: `[x : y : z] ↦ [x² : y² : z²]` on `ℙ²`, `char k = 0`, is PCF all the way
+  down; its `postcriticalSet` is the three coordinate lines.
 - `test_dupont`: `φ = [(x − y + z)² : (x + y − z)² : (−x + y + z)²]` on `ℙ²`, `char k = 0`: the
   divisorial critical locus is the three lines `x − y + z = 0`, `x + y − z = 0`, `−x + y + z = 0`;
   the divisorial branch locus is the coordinate lines `H₀, H₁, H₂`; `φ(Hᵢ) = Mᵢ` with
   `M₀ = V(x − y)`, `M₁ = V(y − z)`, `M₂ = V(x − z)`, and `φ(M₀) = M₂`, `φ(M₂) = M₁`,
   `φ(M₁) = M₀`; so `postcriticalSet φ = {H₀, H₁, H₂, M₀, M₁, M₂}` and no branch line is periodic.
-- `test_wild`: over `k` of characteristic `p` containing `c` transcendental over `𝔽_p`,
-  `F = [x^p(x + y) : y^{p+1} − x^{p+1} − x^p z + x y^p + c z^{p+1} : z^{p+1}]` on `ℙ²` is a finite
-  self-map with non-étale divisorial critical locus `V(x) ∪ V(z)`, both lines invariant, so
-  non-étale PCF and PCF; its restriction to `V(x)` is `t ↦ t^{p+1} + c`, whose critical orbit
-  `0 ↦ c ↦ c^{p+1} + c ↦ ⋯` is infinite (the `n`-th term has degree `(p + 1)^{n−1}` in `c`). So
-  §6.4 fails in characteristic `p`.
+- `test_wild`: over `k` of characteristic `p` containing `c` transcendental over `𝔽_p`, `F = [x^p(x
+  + y) : y^{p+1} − x^{p+1} − x^p z + x y^p + c z^{p+1} : z^{p+1}]` on `ℙ²` is a finite self-map with
+  non-étale divisorial critical locus `V(x) ∪ V(z)`, both lines invariant, so non-étale PCF, and PCF
+  by `divisorialCriticalLocus_subset_nonUnramified_of_isNormalScheme` (§3.2, valid in characteristic
+  `p`; `ℙ²` is normal); its restriction to `V(x)` is `t ↦ t^{p+1} + c`, whose critical orbit `0 ↦ c
+  ↦ c^{p+1} + c ↦ ⋯` is infinite (the `n`-th term has degree `(p + 1)^{n−1}` in `c`). So §6.4 fails
+  in characteristic `p`.
 
 ## Stacks alignment
 
@@ -499,11 +525,11 @@ restatement of a target. *API*: no Stacks counterpart.
 | Target | Tag | Alignment |
 |---|---|---|
 | `ramificationIdxAt_eq_one_iff` | 02GF (6), 02GU | characteristic zero, codimension one, normal |
-| `isReduced_fiber_iff_forall_formallyUnramified` | 02GF (6) | over a codimension-one point |
+| `isReduced_fiber_iff_forall_formallyUnramified` | 02GF (6) | characteristic zero, over a codimension-one point |
 | `isNormalScheme_normalization` | 035L | the normalization in the generic point |
 | `normalizationLift` | 035Q (4) | integral schemes, dominant morphisms |
 | `pointClosureMap` | 0356 | reduced source, closed subscheme target |
-| `isEtaleAt_pointClosureMap_of_notMem_boundingLocus` | — | the bounding theorem; inputs 0BMB, 036W, 0EYG, 0EYH, 030C, 00NR |
+| `isEtaleAt_pointClosureMap_of_notMem_boundingLocus` | — | the bounding theorem; inputs 0BMB, 036W, 0EYG, 0EYH, 035I, 00NR |
 | `ProjectiveSpace.isEtaleAt_homOfForms_iff` | — | API; inputs 02GF (3), 02GU, 00R4 |
 | every other target | — | API |
 
@@ -512,9 +538,15 @@ restatement of a target. *API*: no Stacks counterpart.
 This roadmap is written to be implemented afresh. The source is the manuscript *PCF all the way
 down* (Dupuy, Levy, Tucker, Wang; in preparation), cited by its labels, and the Lean formalization
 `tdupu/pcfawd-formalization` (Dupuy, Tucker, Wang; Lean `4.35.0`, Mathlib `v4.35.0`). Its theorem
-`Pcf.pcfAllTheWayDown_charZero_unconditional` is §6.4 with the hypotheses of Convention 3; its
-local inputs, Zariski–Nagata purity and Abhyankar's lemma, are proved there in affine forms. The
-formalization keeps its own names; this table maps them.
+`Pcf.Palomar.pcfAllTheWayDown_charZero_unconditional` has the hypotheses of Convention 3 and is
+equivalent to §6.4, not identical with it: its PCF hypothesis and recursion use `IsNormalizedPCF`
+(finiteness of the postcritical set on `X̃` of the normalization lift) rather than `IsPCF`, and its
+depth-`d + 1` clause ranges over the periodic points `y` of period `p` in the forward orbit of a
+codimension-one point and over every `h` with `h ≫ ι = ι ≫ iterateHom φ p`, rather than over
+`restrictPointClosure`. The two agree for varieties by §3.5 (`isPCF_normalizationLift_iff`) and
+because closed immersions are monomorphisms. Its local inputs, Zariski–Nagata purity and
+Abhyankar's lemma, are proved there in affine forms. The formalization keeps its own names; this
+table maps them.
 
 | Here | Manuscript | Formalization (`lean/Pcf/`) |
 |---|---|---|
@@ -524,13 +556,13 @@ formalization keeps its own names; this table maps them.
 | `postcriticalSet`, `IsPCF` | `PC`, PCF (`def:pcf`) | `DivisorDynamics.postcriticalSet`, `.IsPCF`; `schemeNormalizedPostcriticalSet`, `IsNormalizedPCF` |
 | `nonUnramifiedPostcriticalSet`, `nonEtalePostcriticalSet`, `IsNonUnramifiedPCF`, `IsNonEtalePCF` | `PC_0`, `PC_1`, `0`-PCF, `1`-PCF (`def:pcf-unnormalized`) | `nonUnramifiedPostcriticalSet`, `nonEtalePostcriticalSet`, `IsNonUnramifiedBranchPCF`, `IsNonEtaleBranchPCF` |
 | `IsPCFAllTheWayDown` | `def:pcfawd` | `SchemePCFAllTheWayDown` (`Bounding/PcfAllTheWayDownCharZero.lean`) |
-| §1.1 | `lem:dictionary`, `lem:branch-crit` | `schemeDivisorRamificationIdx_eq_one_of_formallyEtale` (`Bounding/SchemeDynamics.lean`); `divisorFiber_isReduced_iff_forall_ramificationIdx_eq_one` (`Bounding/ReducedFiberBranch.lean`) |
+| §1.1 | `lem:dictionary`, `lem:branch-crit` | only the direction étale ⇒ index one: `schemeDivisorRamificationIdx_eq_one_of_formallyEtale` (`Bounding/SchemeDynamics.lean`); the ring-level fibre criterion with both rings normal: `divisorFiber_isReduced_iff_forall_ramificationIdx_eq_one` (`Bounding/ReducedFiberBranch.lean`) |
 | §2 | `sec:defs` | `schemeGlobalNormalizationMorphism`, `_unique`, `schemeGlobalNormalization_isNormal`, `schemeGlobalNormalizationMap_isFinite` (`Bounding/GlobalNormalization*.lean`) |
 | §3.3–3.5 | `lem:tower`, `prop:iterates`, `prop:pcf-equiv`, `lem:normalization`, `lem:covers` | `branchIterate_eq`, `postcriticalSet_iterate` (`Dynamics.lean`); `isNormalizedPCF_iff_normalization`; `scheme_isPCF_of_ramified_cover_charZero` (`Bounding/CoverDescent.lean`) |
 | §4 | `lem:finitely-many`, `lem:restriction` | `finite_schemeDivisorPoint_mem_of_isClosed`; `exists_pointClosure_restriction` (`Palomar/Bridge.lean`) |
 | §5.3 | `thm:bounding` | the chart route of `Bounding/` (`LocalChart.lean`, `SchemeBridge.lean`, `SchemeExtraction.lean`), for invariant divisors |
-| §6.1–6.4 | `thm:normal-invariant`, `cor:normal-preperiodic`, `thm:general`, `cor:pcfawd` | `PCFSetup.restriction_isPCF` (`Restriction.lean`); `pcfAllTheWayDown_scheme`; `pcfAllTheWayDown_charZero_unconditional` (`Palomar/Unconditional.lean`) |
-| §6.2 refinement | `prop:normal-unnormalized`, `cor:chains-unnormalized` | `NonEtalePCFSetup.restriction_isNonEtaleBranchPCF` |
+| §6.1–6.4 | `thm:normal-invariant`, `cor:normal-preperiodic`, `thm:general`, `cor:pcfawd` | `PCFSetup.restriction_isPCF` (`Restriction.lean`); `pcfAllTheWayDown_scheme`; `Pcf.Palomar.pcfAllTheWayDown_charZero_unconditional` (`Palomar/Unconditional.lean`; equivalent to §6.4, see above) |
+| §6.2 refinement | `prop:normal-unnormalized`, `cor:chains-unnormalized` | abstract form only: `NonEtalePCFSetup.restriction_isNonEtaleBranchPCF` (`Unnormalized.lean`), whose key inclusion `notMem_nonEtaleBranch_iterate` is a structure field; the scheme-level forms (`InvariantDivisorSchemeNormalizationPCFSetup.restriction_isNonEtaleBranchPCF`, `Bounding/SchemeWiring.lean`) take the local covering package as data, and no unconditional scheme-level statement is proved |
 | Checks | `ex:squaring`, `ex:basilica`, `ex:squaring-P2`, `ex:dupont`, `ex:cusp`, `ex:branch-singular`, `ex:pinched`, `ex:frobenius-line`, `ex:wild` | `Examples/` (abstract and ring-level models) |
 
 ## References
@@ -539,7 +571,7 @@ formalization keeps its own names; this table maps them.
   *Finite ramification for preimage fields of post-critically finite morphisms*, Math. Res. Lett.
   24 (2017), 1633–1647; [arXiv:1511.00194](https://arxiv.org/abs/1511.00194). Example 9 (Dupont's
   map) and the question of PCF all the way down.
-- The Stacks Project, Tags 0356, 030C, 035I, 035J, 035L, 035Q, 02GF, 02GU, 0AUW, 0AVK; and through
-  the cited roadmaps 033I, 00NR, 0BMB, 036W, 0EYG, 0EYH, 00R4.
+- The Stacks Project, Tags 0356, 035I, 035J, 035L, 035Q, 02GF, 02GU, 0AUW, 0AVK; and through
+  the cited roadmaps 033I, 00NR, 02G4, 0BMB, 036W, 0EYG, 0EYH, 00R4.
 - T. Dupuy, A. Levy, T. Tucker, Z. Wang, *PCF all the way down*, in preparation.
 - T. Dupuy, T. Tucker, Z. Wang, Lean formalization `tdupu/pcfawd-formalization`.
