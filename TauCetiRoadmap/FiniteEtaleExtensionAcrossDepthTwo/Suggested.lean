@@ -63,13 +63,31 @@ theorem not_etale_dualNumbers (k : Type u) [Field k] :
     ¬ Algebra.Etale k (Polynomial k ⧸ Ideal.span {(Polynomial.X : Polynomial k) ^ 2}) := by
   sorry
 
-/-- Unramifiedness at a prime descends along an étale base change. *API*. -/
+/-- Unramifiedness at a prime ascends along any base change. *API*. -/
+theorem _root_.Algebra.IsUnramifiedAt.baseChange {R R' S : Type u} [CommRing R] [CommRing R']
+    [CommRing S] [Algebra R R'] [Algebra R S] (q : Ideal S) [q.IsPrime]
+    (Q : Ideal (TensorProduct R R' S)) [Q.IsPrime]
+    (hQ : Q.comap Algebra.TensorProduct.includeRight.toRingHom = q)
+    [Algebra.IsUnramifiedAt R q] :
+    Algebra.IsUnramifiedAt R' Q := by
+  sorry
+
+/-- Unramifiedness at a prime descends along a flat base change. *API*. -/
 theorem _root_.Algebra.isUnramifiedAt_of_isUnramifiedAt_baseChange {R R' S : Type u} [CommRing R]
-    [CommRing R'] [CommRing S] [Algebra R R'] [Algebra R S] [Algebra.Etale R R']
-    [Algebra.FiniteType R S] (q : Ideal S) [q.IsPrime] (Q : Ideal (TensorProduct R R' S))
+    [CommRing R'] [CommRing S] [Algebra R R'] [Algebra R S] [Module.Flat R R']
+    (q : Ideal S) [q.IsPrime] (Q : Ideal (TensorProduct R R' S))
     [Q.IsPrime] (hQ : Q.comap Algebra.TensorProduct.includeRight.toRingHom = q)
     [Algebra.IsUnramifiedAt R' Q] :
     Algebra.IsUnramifiedAt R q := by
+  sorry
+
+/-- A finitely presented algebra which is flat and unramified at a prime `q` is étale at `q`.
+*API*: Mathlib's `Algebra.IsEtaleAt.of_isUnramifiedAt_of_flat` assumes `S` flat over `R`; here
+only `S_q` is. -/
+theorem _root_.Algebra.IsEtaleAt.of_isUnramifiedAt_of_flatAt {R S : Type u} [CommRing R]
+    [CommRing S] [Algebra R S] [Algebra.FinitePresentation R S] (q : Ideal S) [q.IsPrime]
+    [Module.Flat R (Localization.AtPrime q)] [Algebra.IsUnramifiedAt R q] :
+    Algebra.IsEtaleAt R q := by
   sorry
 
 end Layer0
@@ -102,7 +120,8 @@ locally of finite type, flat and quasi-finite at `x`, with `dim 𝒪_{X,x} ≥ 1
 unramified at every specialization `x' ⤳ x` with `dim 𝒪_{X,x'} = 1`, is étale on an open
 neighbourhood of `x`. This is the target. -/
 @[stacks 0BJH]
-theorem exists_etale_of_flat_of_formallyUnramified_codimOne {X Y : Scheme.{u}}
+theorem _root_.AlgebraicGeometry.Scheme.Hom.exists_etale_of_flat_of_formallyUnramified_codimOne
+    {X Y : Scheme.{u}}
     [IsLocallyNoetherian X] [IsLocallyNoetherian Y] (f : X ⟶ Y) [LocallyOfFiniteType f] (x : X)
     (hflat : (f.stalkMap x).hom.Flat) (hqf : f.QuasiFiniteAt x)
     (hdim : 1 ≤ ringKrullDim (X.presheaf.stalk x))
@@ -115,10 +134,11 @@ theorem exists_etale_of_flat_of_formallyUnramified_codimOne {X Y : Scheme.{u}}
 but not assumed locally of finite type, "quasi-finite at `x`" and "unramified at `x'`" are Stacks'
 Definitions 29.21.1 (01TD) and 29.36.1 (02G4) written with Mathlib's morphism classes, and `x` is
 not the generic point of an irreducible component. It follows from
-`exists_etale_of_flat_of_formallyUnramified_codimOne` by PurityOfBranchLocus §0.1
-`unramifiedAt_iff_stalkMap` and `one_le_ringKrullDim_stalk_iff`. -/
+`Scheme.Hom.exists_etale_of_flat_of_formallyUnramified_codimOne` by PurityOfBranchLocus §0.1
+`Scheme.Hom.unramifiedAt_iff_stalkMap` and `one_le_ringKrullDim_stalk_iff`. -/
 @[stacks 0BJH "Stacks form"]
-theorem etaleAt_of_flat_of_unramifiedAt_codimOne {X Y : Scheme.{u}} [IsLocallyNoetherian X]
+theorem _root_.AlgebraicGeometry.Scheme.Hom.etaleAt_of_flat_of_unramifiedAt_codimOne
+    {X Y : Scheme.{u}} [IsLocallyNoetherian X]
     [IsLocallyNoetherian Y] (f : X ⟶ Y) [Flat f] (x : X)
     (hqf : (∃ U : X.Opens, x ∈ U ∧ LocallyOfFiniteType (U.ι ≫ f)) ∧ f.QuasiFiniteAt x)
     (hgen : ∀ Z ∈ irreducibleComponents X, ¬ IsGenericPoint x Z)

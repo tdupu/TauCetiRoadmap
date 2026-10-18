@@ -12,8 +12,9 @@ exactly where it is flat, and étale everywhere exactly when `𝓑` is finite lo
 construction commutes with flat base change and with enlarging `U`. The first result is the
 input to the third clause of the second.
 
-Mathlib has étale, unramified and quasi-finite morphisms with their affine pointwise forms, flat
-plus unramified implies étale (`Algebra.IsEtaleAt.of_isUnramifiedAt_of_flat`), étale localization
+Mathlib has étale, unramified and quasi-finite morphisms with their affine pointwise forms, a
+finitely presented flat algebra unramified at a prime is étale there
+(`Algebra.IsEtaleAt.of_isUnramifiedAt_of_flat`, which needs global flatness), étale localization
 of a quasi-finite algebra (`@[stacks 00UJ]`), the dimension formula for going down
 (`@[stacks 00ON]`) and Krull's principal ideal theorem. Tau Ceti has the relative spectrum of a
 quasi-coherent algebra and finite locally free modules on a scheme.
@@ -25,7 +26,7 @@ supplies direct-image algebras, reflexive sheaves, Hartogs extension and depth. 
 
 | Layer | Title | What it delivers |
 |---|---|---|
-| [0](#layer-0-commutative-algebra) | Commutative algebra | height-one primes through an element (0BJG), heights in flat quasi-finite extensions, the finite flat local case of 0BJH |
+| [0](#layer-0-commutative-algebra) | Commutative algebra | height-one primes through an element (0BJG), heights in flat quasi-finite extensions, the finite flat local case of 0BJH, unramifiedness along base change, étaleness at a prime from flatness at it |
 | [1](#layer-1-étaleness-from-codimension-one) | Étaleness from codimension one | 0BJH in affine, library and Stacks forms |
 | [2](#layer-2-finite-étale-extension-across-depth-two) | Finite étale extension across depth two | the construction `depthTwoExtension` and every clause of 0EY6 |
 
@@ -45,7 +46,8 @@ The end theorems are `Scheme.Hom.exists_etale_of_flat_of_formallyUnramified_codi
 
 **This roadmap owns** Stacks, Lemmas 58.21.1 (0BJG), 58.21.2 (0BJH) and 58.21.5 (0EY6); the
 heights of primes along flat quasi-finite homomorphisms of Noetherian rings; the finite flat local
-case of 0BJH; descent of unramifiedness at a prime along an étale base change; the scheme
+case of 0BJH; ascent and descent of unramifiedness at a prime along a base change; étaleness at a
+prime from flatness and unramifiedness at that prime; the scheme
 `depthTwoExtension π` attached to a finite étale cover of an open whose complement has depth
 `≥ 2`, with its universal property; and the criterion for such a cover to extend to a finite étale
 scheme over `X`.
@@ -70,7 +72,9 @@ no second carrier.
   [SchemeAndStackFoundations](../SchemeAndStackFoundations/README.md) §0.1 (`pushforwardAlgebra`,
   `pushforwardAlgebra_affine`, `pushforwardAlgebra_baseChange`, Stacks 02KH for `i = 0`).
 - *Morphism properties of relative spectra*: SchemeAndStackFoundations §0.2 (finiteness of the
-  relative spectrum of a finite algebra, Stacks 01WI; Tau Ceti `relativeSpec_finite_iff`).
+  relative spectrum of a finite quasi-coherent algebra: over an affine open it is the spectrum of a
+  finite algebra, so criterion (2) of Morphisms, Lemma 29.45.3 (01WI) applies; Tau Ceti
+  `relativeSpec_finite_iff`).
 - *Coherent extension*: SchemeAndStackFoundations §0.4 (`coherent_extension`, Stacks 0G41).
 - *Reflexive sheaves and Hartogs extension*: SchemeAndStackFoundations §0.6
   (`Scheme.Modules.IsReflexive`, `IsReflexive.locallyFree`, `IsReflexive.two_le_depth_stalk`,
@@ -87,7 +91,8 @@ no second carrier.
   `Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown` (`@[stacks 00ON]`),
   `Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes`,
   `Module.supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson`,
-  `Algebra.unramifiedLocus_eq_compl_support`, `Algebra.IsEtaleAt.of_isUnramifiedAt_of_flat`.
+  `Algebra.unramifiedLocus_eq_compl_support`, `Algebra.FormallyEtale.of_formallyUnramified_of_field`,
+  `Algebra.FormallySmooth.of_formallySmooth_residueField_tensor`.
 
 Purity of the branch locus (Stacks 0BMB), which has the same reduction to a finite local model with
 normality and regularity in place of flatness, is PurityOfBranchLocus. Abhyankar's lemma is
@@ -114,18 +119,23 @@ normality and regularity in place of flatness, is PurityOfBranchLocus. Abhyankar
    locally Noetherian scheme.
 5. **Reading of Stacks 0EY6.** Two points of the tag as written are fixed here.
    (i) *Reflexive for non-integral `X`.* 0EY6 does not assume `X` integral, while Stacks defines
-   reflexive modules over domains only (More on Algebra, Definition 15.24.1, Section 15.24 (0AUY))
-   and reflexive sheaves on integral schemes only (Divisors, Definition 31.13.1 (0AVU)). The two
+   reflexive modules over domains (More on Algebra, Definition 15.24.1 (0AUZ); the remark after it
+   notes that the definition can be made for more general rings, and does not pursue it) and
+   reflexive sheaves on integral schemes only (Divisors, Definition 31.13.1 (0AVU)). The two
    lemmas its proof cites, 31.13.12 (0EBJ) and 31.13.11 (0EBI), both assume `X` integral. Clause
-   (1) is stated here with Convention 4's reflexive, and the proof cites the general forms
+   (1) is stated here with Convention 4's reflexive, and the proof cites
    `reflexive_extension_of_depth` and `IsReflexive.two_le_depth_stalk` of SchemeAndStackFoundations
-   §0.6, which assume only that `X` is locally Noetherian.
+   §0.6, versions of 0EBJ and 0EBI (1) that assume only that `X` is locally Noetherian.
    (ii) *Clause (b).* The tag concludes "a unique isomorphism `Y' ×_X U' = V'` over `U'`", and
    `Y'` is not defined there. Its proof applies "the uniqueness in (2) … to the restriction
-   `Y ×_X U'`", so the statement meant is `Y ×_X U' ≅ V'`. §2.4 states that form.
+   `Y ×_X U'`", so the statement meant is a unique isomorphism `Y ×_X U' ≅ V'` over `U'`
+   compatible with the given identification of the restrictions over `U`. The compatibility is
+   needed for uniqueness: for `U' = U` and `V' = V = U ⊔ U`, swapping the two copies is a second
+   isomorphism over `U'`. §2.4 states that form.
 6. Names: ring-level statements live in the `Algebra`, `Ideal` and `IsLocalRing` namespaces, and
    scheme-level statements in `AlgebraicGeometry`. The suggested forms are in
-   `TauCetiRoadmap.FiniteEtaleExtensionAcrossDepthTwo`.
+   `TauCetiRoadmap.FiniteEtaleExtensionAcrossDepthTwo`, except that names written here with a
+   Mathlib prefix (`Ideal.`, `Algebra.`, `Scheme.Hom.`) are declared at that full name.
 
 ## Layer 0: commutative algebra
 
@@ -168,26 +178,57 @@ finite locally free case in its proof): for a Noetherian local ring `A` with
 every prime `𝔮` of `B` with `𝔮.height = 1`, `Algebra.Etale A B`. The proof follows Stacks. `B` is
 free (`Module.free_of_flat_of_isLocalRing`). For a basis `b`, if `Algebra.discr A b` is not a unit,
 §0.1 gives a prime `𝔭` of height one containing it. By LocalPurity §0.2
-`Algebra.isUnit_discr_localization_iff`, `B_𝔭` is not étale over `A_𝔭`. Since it is flat, it is
-ramified at some prime `𝔮` of `B` over `𝔭` (`Algebra.unramifiedLocus_eq_compl_support`), and
-`𝔮.height = 1` by §0.2. This contradicts the hypothesis, so `Algebra.discr A b` is a unit and LocalPurity §0.2
-`Algebra.etale_iff_isUnit_discr` concludes.
+`Algebra.isUnit_discr_localization_iff`, `B_𝔭` is not étale over `A_𝔭`. Since it is finite and
+flat, it is ramified at some prime of `B_𝔭` (`Algebra.Etale.of_formallyUnramified_of_flat`). That
+prime may lie over a prime of `A_𝔭` smaller than `𝔭A_𝔭`, so one more step is needed. The
+unramified locus of `B_𝔭` is open (`Algebra.unramifiedLocus_eq_compl_support`), so the ramified
+locus is closed under specialization, and the ramified prime lies in a maximal ideal of `B_𝔭` that
+is also ramified. Since `B_𝔭` is finite over the local ring `A_𝔭`, its maximal ideals lie over
+`𝔭A_𝔭` (`Ideal.IsMaximal.under`). So there is a prime `𝔮` of `B` over `𝔭` at which `B` is
+ramified over `A`, and `𝔮.height = 1` by §0.2. This contradicts the hypothesis, so
+`Algebra.discr A b` is a unit and LocalPurity §0.2 `Algebra.etale_iff_isUnit_discr` concludes.
 *Needs:* §§0.1, 0.2; LocalPurity §0.2; Mathlib `Module.free_of_flat_of_isLocalRing`,
-`Algebra.discr`, `Algebra.Etale.of_formallyUnramified_of_flat`.
+`Algebra.discr`, `Algebra.Etale.of_formallyUnramified_of_flat`,
+`Algebra.unramifiedLocus_eq_compl_support`, `Ideal.IsMaximal.under`.
 
 **Checks.**
 - `not_etale_dualNumbers`: over a field `k` (dimension zero), `k[x]/(x²)` is finite and flat, has
   no prime of height one, and is not étale. The hypothesis `1 ≤ ringKrullDim A` is needed.
 
-### 0.4 Descent of unramifiedness along an étale base change
+### 0.4 Unramifiedness at a prime along a base change
 
-Prove `Algebra.isUnramifiedAt_of_isUnramifiedAt_baseChange` (*API*): for an `R`-algebra `S` of
-finite type, an étale `R`-algebra `R'`, a prime `𝔮` of `S` and a prime `𝔔` of `R' ⊗[R] S`
-lying over `𝔮`, `Algebra.IsUnramifiedAt R' 𝔔` implies `Algebra.IsUnramifiedAt R 𝔮`. The module of
-differentials of `R' ⊗[R] S` over `R'` is the base change of that of `S` over `R`, and
-`S_𝔮 → (R' ⊗[R] S)_𝔔` is faithfully flat.
-*Needs:* Mathlib `KaehlerDifferential`, `Algebra.unramifiedLocus_eq_compl_support`,
-`Module.FaithfullyFlat`.
+Prove `Algebra.IsUnramifiedAt.baseChange` (*API*): for `R`-algebras `S` and `R'`, a prime `𝔮` of
+`S` and a prime `𝔔` of `R' ⊗[R] S` lying over `𝔮`, `Algebra.IsUnramifiedAt R 𝔮` implies
+`Algebra.IsUnramifiedAt R' 𝔔`. The module of differentials of `R' ⊗[R] S` over `R'` is the base
+change of that of `S` over `R`, so its localization at `𝔔` is
+`(Ω_{S/R})_𝔮 ⊗_{S_𝔮} (R' ⊗[R] S)_𝔔 = 0`.
+
+Prove `Algebra.isUnramifiedAt_of_isUnramifiedAt_baseChange` (*API*), the converse for a flat
+`R'`: with `R'` flat over `R`, `Algebra.IsUnramifiedAt R' 𝔔` implies `Algebra.IsUnramifiedAt R 𝔮`.
+The same identification holds, and `S_𝔮 → (R' ⊗[R] S)_𝔔` is a flat local homomorphism, hence
+faithfully flat, so `(Ω_{S/R})_𝔮 = 0`.
+*Needs:* Mathlib `KaehlerDifferential`, `KaehlerDifferential.tensorKaehlerEquiv`,
+`Algebra.unramifiedLocus_eq_compl_support`, `Module.FaithfullyFlat`.
+
+### 0.5 Étale at a prime from flat and unramified at that prime
+
+Prove `Algebra.IsEtaleAt.of_isUnramifiedAt_of_flatAt` (*API*): for a finitely presented
+`R`-algebra `S` and a prime `𝔮` of `S` with `Localization.AtPrime 𝔮` flat over `R` and
+`Algebra.IsUnramifiedAt R 𝔮`, `Algebra.IsEtaleAt R 𝔮`. Mathlib's
+`Algebra.IsEtaleAt.of_isUnramifiedAt_of_flat` needs `S` flat over `R`, not only `S_𝔮`. The proof
+goes through the local ring. Let `𝔭 = 𝔮.under R`. Then `R_𝔭 → S_𝔮` is flat and local, and `S_𝔮`
+is a localization of the finitely presented `R_𝔭`-algebra `R_𝔭 ⊗[R] S`. `S_𝔮` is formally
+unramified over `R_𝔭` (`Algebra.FormallyUnramified.localization_base`), so its closed fibre
+`κ(𝔭) ⊗[R_𝔭] S_𝔮` is formally unramified and essentially of finite type over `κ(𝔭)`, hence formally
+étale (`Algebra.FormallyEtale.of_formallyUnramified_of_field`).
+`Algebra.FormallySmooth.of_formallySmooth_residueField_tensor` gives that `S_𝔮` is formally smooth
+over `R_𝔭`, hence formally étale, and composing with the formally étale `R → R_𝔭`
+(`Algebra.FormallyEtale.of_isLocalization`, `Algebra.FormallyEtale.comp`) gives
+`Algebra.IsEtaleAt R 𝔮`.
+*Needs:* Mathlib `Algebra.IsEtaleAt`, `Algebra.FormallyUnramified.localization_base`,
+`Algebra.FormallyEtale.of_formallyUnramified_of_field`,
+`Algebra.FormallySmooth.of_formallySmooth_residueField_tensor`,
+`Algebra.FormallyEtale.of_isLocalization`, `Algebra.FormallyEtale.comp`.
 
 ## Layer 1: étaleness from codimension one
 
@@ -203,12 +244,12 @@ form): for a Noetherian ring `R`, a finite type `R`-algebra `S` and a prime `�
 `(R' ⊗[R] S)_e` is finite over `R'` with a unique prime `𝔔` over `𝔓`, and `𝔔` lies over `𝔮`. Its
 localization at `𝔓` is then local, finite and flat over `R'_𝔓`. Its height-one primes lie over
 height-one primes `𝔮' ≤ 𝔮`, by §0.2 for the étale map `S → R' ⊗[R] S`, and unramifiedness passes
-to the base change. Also `ringKrullDim R'_𝔓 = 𝔮.height ≥ 1` by §0.2. So §0.3 makes it étale over
+to the base change (§0.4 `Algebra.IsUnramifiedAt.baseChange`). Also `ringKrullDim R'_𝔓 = 𝔮.height ≥ 1` by §0.2. So §0.3 makes it étale over
 `R'_𝔓`. Hence `R' ⊗[R] S` is unramified at `𝔔` over `R'`, and §0.4 gives
-`Algebra.IsUnramifiedAt R 𝔮`. Flatness at `𝔮` and `Algebra.IsEtaleAt.of_isUnramifiedAt_of_flat`
-finish the proof.
-*Needs:* §§0.2–0.4; Mathlib `Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq`,
-`Algebra.IsEtaleAt.of_isUnramifiedAt_of_flat`, `Algebra.IsUnramifiedAt`, `Algebra.QuasiFiniteAt`.
+`Algebra.IsUnramifiedAt R 𝔮`. `S` is finitely presented over the Noetherian `R`, so flatness at
+`𝔮` and §0.5 `Algebra.IsEtaleAt.of_isUnramifiedAt_of_flatAt` finish the proof.
+*Needs:* §§0.2–0.5; Mathlib `Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq`,
+`Algebra.IsUnramifiedAt`, `Algebra.QuasiFiniteAt`.
 
 ### 1.2 Scheme forms
 
@@ -234,9 +275,9 @@ locally of finite type, by `Scheme.Hom.unramifiedAt_iff_stalkMap` and
   finite and flat, ramified along `x = 0`, and not étale at the origin. The codimension-one
   hypothesis fails at the generic point of `x = 0`.
 - `test_flat_needed`: for `X` the union of the planes `V(x, y)` and `V(z, w)` in `𝔸⁴`, the map from
-  their disjoint union to `X` is finite, quasi-finite and an isomorphism off the origin, so it is
-  unramified at every codimension-one point. It is not flat at a point over the origin, and not
-  étale there.
+  their disjoint union to `X` is finite and a closed immersion on each plane, so it is quasi-finite
+  and unramified everywhere, including at the points over the origin. It is not flat at a point
+  over the origin, and not étale there.
 
 ## Layer 2: finite étale extension across depth two
 
@@ -256,10 +297,7 @@ quasi-separated, since `π` is finite and `j` is an open immersion into a locall
 (Mathlib, `@[stacks 01OX]`). Its underlying module is `j_*` of that of `pushforwardAlgebra π`
 (Mathlib `Scheme.Modules.pushforwardComp`). Define
 `depthTwoExtension π := relativeSpec X (depthTwoExtensionAlgebra π)` (Tau Ceti), an affine scheme
-over `X` with structure morphism `p`. Prove `depthTwoExtension_spec_iso` (*API*): for
-`X = Spec A`, `depthTwoExtension π ≅ Spec Γ(V, 𝒪_V)` over `X`, with `Γ(V, 𝒪_V)` finite over `A`
-(Tau Ceti `relativeSpecAffineIso`, and `coherent_hartogs` for
-`Γ(X, j_*π_*𝒪_V) = Γ(V, 𝒪_V)`).
+over `X` with structure morphism `p`.
 *Needs:* SchemeAndStackFoundations §0.1; Tau Ceti `CommMon.relativeSpec`,
 `Scheme.Modules.isFiniteLocallyFree`; Mathlib `Scheme.Modules.pushforward`, `QuasiCompact`,
 `QuasiSeparated`.
@@ -292,8 +330,14 @@ Prove, each with `@[stacks 0EY6]` and its clause:
   the isomorphism. Uniqueness holds because restriction of sections to `U` is injective
   (`coherent_hartogs`).
 
+Prove `depthTwoExtension_spec_iso` (*API*): for `X = Spec A`, `depthTwoExtension π ≅ Spec Γ(V, 𝒪_V)`
+over `X`, with `Γ(V, 𝒪_V)` finite over `A`. The global sections of `j_*π_*𝒪_V` are `Γ(V, 𝒪_V)` by
+the definition of the pushforward, and Tau Ceti `relativeSpecAffineIso` gives the isomorphism.
+Finiteness over `A` is the coherence in `depthTwoExtensionAlgebra_isReflexive` above.
+
 *Needs:* §2.1; SchemeAndStackFoundations §§0.2, 0.6, 0.17; AlgebraicVectorBundles L1A; Tau Ceti
-`relativeSpecEquiv`; Mathlib `Scheme.Modules.restrictFunctorAdjCounitIso`, `IsFinite`.
+`relativeSpecEquiv`, `relativeSpecAffineIso`; Mathlib `Scheme.Modules.restrictFunctorAdjCounitIso`,
+`IsFinite`.
 
 ### 2.3 Étaleness and flatness
 
@@ -308,7 +352,8 @@ finite, so it is locally of finite type and quasi-finite at `y`, and `Y` is loca
 Prove `depthTwoExtension_etale_iff` (Stacks 0EY6, clause (4)): `Etale p` iff the underlying
 module of `depthTwoExtensionAlgebra π` satisfies `Scheme.Modules.isFiniteLocallyFree`. The stalk
 `𝓑_x` is flat over `𝒪_{X,x}` iff its localizations at maximal ideals, the local rings of `Y` over
-`x`, are flat (`Module.flat_of_isLocalized_maximal`). A finite flat module over a Noetherian local
+`x`, are flat. The "if" direction is `Module.flat_of_isLocalized_maximal`; the "only if" direction
+is that a localization of a flat algebra is flat (`Localization.flat`). A finite flat module over a Noetherian local
 ring is free (`Module.free_of_flat_of_isLocalRing`). Combine this with clause (3) and §2.1.
 
 Prove `depthTwoExtension_extends_iff` (*API*): `V` is isomorphic over `U` to the restriction of a
@@ -318,7 +363,7 @@ is finite étale over `X` and restricts to `V`, then its local rings off `V` hav
 `depthTwoExtension_unique` identifies `W` with `depthTwoExtension π`. LocalPurity §2.2
 `restrictOpen_fullyFaithful_of_depth` gives full faithfulness of the restriction.
 *Needs:* §§1.2, 2.2; SchemeAndStackFoundations §0.17; LocalPurity §2.2; Mathlib
-`Module.flat_of_isLocalized_maximal`, `Module.free_of_flat_of_isLocalRing`.
+`Module.flat_of_isLocalized_maximal`, `Localization.flat`, `Module.free_of_flat_of_isLocalRing`.
 
 **Checks.**
 - `test_cone_cover`: over a field `k` of characteristic `≠ 2`, let `A` be `k[x², xy, y²]`
@@ -328,9 +373,13 @@ is finite étale over `X` and restricts to `V`, then its local rings off `V` hav
   `X` and not flat at the closed point, since its algebra has rank two over `A` and needs the
   three generators `1, x, y`. So it is not étale there, and clauses (3) and (4) are sharp.
 - `test_two_planes`: for `X` the union of the planes `V(x, y)` and `V(z, w)` in `𝔸⁴`, `U` the
-  complement of the origin and `V = U`, `depth 𝒪_{X,0} = 1`. Both `X` and the disjoint union of
-  the two planes are finite over `X` and restrict to `U`, so the depth hypothesis is needed for
-  `depthTwoExtension_unique`.
+  complement of the origin and `V = U`, `depth 𝒪_{X,0} = 1`, so the standing depth hypothesis
+  fails. The construction still makes sense: `j_*𝒪_U` is the direct image of the structure sheaf of
+  the disjoint union `X̃` of the two planes, so `depthTwoExtension π` is `X̃`, which is not flat, hence
+  not étale, at the points over the origin. Yet `V = U` is the restriction of the finite étale
+  `X → X`. So the depth hypothesis on `X` is needed for `depthTwoExtension_extends_iff`.
+  (Uniqueness, `depthTwoExtension_unique`, still holds here: `X` itself is not a competitor, since
+  its local ring at the origin has depth `1`.)
 - `test_reducible`: for `X = Spec k[x, y, z, w]/(xw)` (reducible, Cohen–Macaulay of dimension
   three), `U` the complement of the origin and `V = U`, `depthTwoExtension π ≅ X`. Every clause
   applies, though `X` is not integral (Convention 5 (i)).
@@ -367,15 +416,17 @@ counterpart.
 | 0.1 | `exists_isPrime_height_eq_one_of_mem` | 58.21.1 (0BJG) | exact |
 | 0.2 | `Ideal.height_eq_height_under_of_flat_of_quasiFiniteAt` | — | API |
 | 0.3 | `etale_of_finite_flat_of_isUnramifiedAt_height_one` | step of 58.21.2 (0BJH) | adapted (finite flat, local base) |
-| 0.4 | `Algebra.isUnramifiedAt_of_isUnramifiedAt_baseChange` | — | API |
+| 0.4 | `Algebra.IsUnramifiedAt.baseChange`, `Algebra.isUnramifiedAt_of_isUnramifiedAt_baseChange` | — | API |
+| 0.5 | `Algebra.IsEtaleAt.of_isUnramifiedAt_of_flatAt` | — | API |
 | 1.1 | `isEtaleAt_of_flat_of_isUnramifiedAt_height_one` | 58.21.2 (0BJH) | adapted (affine) |
 | 1.2 | `one_le_ringKrullDim_stalk_iff` | — | API |
 | 1.2 | `Scheme.Hom.exists_etale_of_flat_of_formallyUnramified_codimOne` | 58.21.2 (0BJH) | adapted (stalk forms, flat at `x`) |
 | 1.2 | `Scheme.Hom.etaleAt_of_flat_of_unramifiedAt_codimOne` | 58.21.2 (0BJH) | exact |
 | 2.1 | `isFiniteLocallyFree_pushforward_of_finite_flat` | 29.49.2 (02KB) | adapted |
-| 2.1 | `depthTwoExtensionAlgebra`, `depthTwoExtension`, `depthTwoExtension_spec_iso` | — | API |
+| 2.1 | `depthTwoExtensionAlgebra`, `depthTwoExtension` | — | API |
 | 2.2 | `depthTwoExtensionAlgebra_isReflexive` | 58.21.5 (0EY6) (1) | adapted (Convention 5 (i)) |
 | 2.2 | `depthTwoExtension_isFinite`, `depthTwoExtension_restrictIso`, `depthTwoExtension_two_le_depth`, `depthTwoExtension_unique` | 58.21.5 (0EY6) (2) | exact |
+| 2.2 | `depthTwoExtension_spec_iso` | — | API |
 | 2.3 | `depthTwoExtension_etaleAt_iff_flat` | 58.21.5 (0EY6) (3) | exact |
 | 2.3 | `depthTwoExtension_etale_iff` | 58.21.5 (0EY6) (4) | exact |
 | 2.3 | `depthTwoExtension_extends_iff` | — | API |
@@ -393,7 +444,8 @@ Z. Wang; Lean 4, Mathlib, no `sorry`) contains part of Layers 0 and 1. Paths are
 | --- | --- | --- |
 | 0.2 | `Ideal.height_under_eq_of_finite_of_flat`, `mem_minimalPrimes_of_quasiFiniteAt` | `HeightOneEtaleBridge.lean`, `Tag0BMBLocalModel.lean` |
 | 0.3 | `Algebra.etale_heightOne_baseChange_of_unramifiedAt_height_one`, `Algebra.etale_of_genericFiber_and_unramifiedAt_height_one` (for `A` a domain) | `HeightOneEtaleBridge.lean` |
-| 1.1 | the étale local model and descent for 0BMB: `exists_etale_finiteComponent_of_zariskiNagataPurityHypothesesAt`, `formallyUnramified_of_faithfullyFlat_of_formallyEtale`, `isEtaleAt_of_flat_of_formallyUnramified` | `Tag0BMBAssembly.lean`, `Tag0BMBLocalModel.lean` |
+| 0.5 | `isEtaleAt_of_flat_of_formallyUnramified` (flat and formally unramified at `q`) | `Tag0BMBLocalModel.lean` |
+| 1.1 | the étale local model and descent for 0BMB: `exists_etale_finiteComponent_of_zariskiNagataPurityHypothesesAt`, `formallyUnramified_of_faithfullyFlat_of_formallyEtale` | `Tag0BMBAssembly.lean`, `Tag0BMBLocalModel.lean` |
 | 2.1 | affine depth-two extension of sections for a finite algebra: `openSections_algebraMap_bijective_of_module_regularPair` | `FiniteNormalHartogs.lean` |
 
 ## References
